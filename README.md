@@ -1,5 +1,11 @@
-# RBC PDF Statement Reader
-Converts RBC credit card PDF Statements to CSV format.
+# RBC Statement To CSV
+
+This program will read transaction data out of RBC credit card statements, and put them in a .csv file with the following columns:
+
+- Transaction date
+- Posting date
+- Description
+- Amount
 
 ## Requirements
 - Python 3.8+
