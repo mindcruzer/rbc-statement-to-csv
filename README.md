@@ -1,6 +1,6 @@
 # RBC Statement To CSV
 
-This program will read transaction data out of RBC credit card statements, and put them in a .csv file with the following columns:
+This program will read transaction data out of RBC credit card statements and put them in a .csv file with the following columns:
 
 - Transaction date
 - Posting date
