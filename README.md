@@ -20,4 +20,4 @@ Drop all PDF statements into the project directory. The program will read all tr
 Run (double-click) `convert.bat`.
 
 ### Linux
-I should probably write a script for Linux...
+Run `convert.sh` in terminal.
