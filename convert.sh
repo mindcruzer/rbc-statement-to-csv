@@ -14,9 +14,9 @@ do
 	python "${PDF2TXT}" -o "${XML_FILE}.xml" "${PDF}" 
 done
 
-XML_FILES=($(find -H . -type f -regextype posix-extended -regex '\./.+\.xml' -print))
+XML_FILES=($(find -H . -maxdepth 1 -type f -regextype posix-extended -regex '\./.+\.xml' -print))
 
 echo "${XML_FILES[@]}"
 python convert.py "${OUTPUT_FILE}" "${XML_FILES[@]}"
 
-rm -rf .xml
+rm -rf *.xml
