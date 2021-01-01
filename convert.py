@@ -89,7 +89,14 @@ for input_file in input_files:
         date_2_month = row[5:8]
         date_2_day = row[8:10]
 
-        transaction_date = datetime.strptime(f'{date_1_month}-{date_1_day}-{list(date_range.values())[0]}', '%b-%d-%Y')
+        transaction_date = None
+        try:
+            transaction_date = datetime.strptime(f'{date_1_month}-{date_1_day}-{date_range[date_1_month]}', '%b-%d-%Y')
+        except KeyError:
+            # there is a strange case where the first date was before the days specified in date_range
+            # so just use the first year
+            first_year = min([int(year) for year in date_range.values()])
+            transaction_date = datetime.strptime(f'{date_1_month}-{date_1_day}-{first_year}', '%b-%d-%Y')
         posting_date = datetime.strptime(f'{date_2_month}-{date_2_day}-{date_range[date_2_month]}', '%b-%d-%Y')
         
         description, amount = row[10:].split('$')
