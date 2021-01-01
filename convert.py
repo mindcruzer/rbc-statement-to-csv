@@ -7,6 +7,8 @@ import csv
 output_file = sys.argv[1]
 input_files = sys.argv[2:]
 txns = []
+re_exchange_rate = re.compile(r'Exchange rate-([0-9]+\.[0-9]+)', re.MULTILINE)
+re_foreign_currency = re.compile(r'Foreign Currency-([A-Z]+) ([0-9]+\.[0-9]+)', re.MULTILINE)
 
 for input_file in input_files:
     tree = ET.parse(input_file)
@@ -107,15 +109,20 @@ for input_file in input_files:
 
         # split desc after negative check, otherwise `-` gets left behind
         description = description.split("\n")[0]
+        raw = row.strip()
 
         amount = amount.replace(',', '').replace("\n", "")
-        
+        match_exchange_rate = re_exchange_rate.search(raw)
+        match_foreign_currency = re_foreign_currency.search(raw)
         txns.append({
             'transaction_date': transaction_date,
             'posting_date': posting_date,
             'description': description,
             'amount': amount,
-            'raw': row
+            'raw': raw,
+            'exchange_rate': match_exchange_rate.group(1) if match_exchange_rate else None,
+            'foreign_currency': match_foreign_currency.group(1) if match_foreign_currency else None,
+            'amount_foreign': match_foreign_currency.group(2) if match_foreign_currency else None,
         })
 
 txns = sorted(txns, key = lambda txn: txn['transaction_date'])
@@ -123,7 +130,16 @@ txns = sorted(txns, key = lambda txn: txn['transaction_date'])
 # Write as csv
 with open(output_file, 'w', newline='') as csvfile:
     csv_writer = csv.writer(csvfile)
-    csv_writer.writerow(['Transaction Date', 'Posting Date', 'Description', 'Amount', 'Raw'])
+    csv_writer.writerow([
+        'Transaction Date',
+        'Posting Date',
+        'Description',
+        'Amount',
+        'Amount Foreign Currency',
+        'Foreign Currency',
+        'Exchange Rate',
+        'Raw',
+    ])
 
     for txn in txns:
         csv_writer.writerow([
@@ -131,5 +147,8 @@ with open(output_file, 'w', newline='') as csvfile:
             txn['posting_date'].strftime('%Y-%m-%d'),
             txn['description'],
             txn['amount'],
-            txn['raw']
+            txn['amount_foreign'],
+            txn['foreign_currency'],
+            txn['exchange_rate'],
+            txn['raw'],
         ])
