@@ -6,6 +6,7 @@ This program will read transaction data out of RBC credit card statements and pu
 - Posting Date
 - Description
 - Amount
+- Amount In Foreign Currency
 - Foreign Currency
 - Exchange Rate
 
