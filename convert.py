@@ -38,7 +38,7 @@ for input_file in input_files:
                     if len(row) > 10 and (x_pos - last_x2) > 0.7:
                         row += " "
                 last_x2 = x2_pos
-                if int(size) in [6, 8]:
+                if size >= 5 and size <= 9:
                     row += tag.text
             elif tag.tag != 'text' and row != '':
                 # Row is over, start a new one
