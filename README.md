@@ -12,7 +12,7 @@ This program will read transaction data out of RBC credit card statements and pu
 
 ## Requirements
 - Python 3.8+
-- [PdfMiner](https://github.com/euske/pdfminer)
+- [PdfMiner](https://github.com/pdfminer/pdfminer.six)
 
 Ensure `python` is in your PATH.
 
