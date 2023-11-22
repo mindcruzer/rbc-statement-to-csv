@@ -8,7 +8,6 @@ PDF2TXT=$(which pdf2txt.py)
 
 mkdir -p ./tmp
 
-# Use find command instead of fd for more control
 # -print0 will print the file name followed by a null character instead of newline
 find . -name '*.pdf' -print0 | while IFS= read -r -d '' PDF; do
     # Use quotes around "$PDF" to handle spaces in filenames
@@ -26,4 +25,4 @@ echo "${XML_FILES[@]}"
 python convert.py "$OUTPUT_FILE" "${XML_FILES[@]}"
 
 # Clean up XML files
-# rm -rf *.xml
+rm -rf tmp/*.xml
