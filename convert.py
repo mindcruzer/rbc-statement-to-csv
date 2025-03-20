@@ -1,19 +1,30 @@
+#! /usr/bin/env python3
+
+import argparse
 from datetime import datetime
+from glob import glob
+import io
+import pdfminer.high_level
 import sys
 import xml.etree.ElementTree as ET
 import re
 import csv
 
-output_file = sys.argv[1]
-input_files = sys.argv[2:]
-txns = []
+default_output_file = 'transactions.csv'
 re_exchange_rate = re.compile(r'Exchange rate-([0-9]+\.[0-9]+)', re.MULTILINE)
 re_foreign_currency = re.compile(r'Foreign Currency-([A-Z]+) ([0-9]+\.[0-9]+)', re.MULTILINE)
 
-for input_file in input_files:
-    tree = ET.parse(input_file)
-    root = tree.getroot()
+
+def read_pdf_as_xml(input_file):
+    with open(input_file, "rb") as inf, io.BytesIO() as outf:
+        pdfminer.high_level.extract_text_to_fp(inf, outf, "xml")
+        return ET.fromstring(outf.getvalue())
+
+
+def read_txns_from_pdf(input_file):
+    root = read_pdf_as_xml(input_file)
     rows = []
+    txns = []
 
     print(f'Processing {input_file}...')
 
@@ -52,7 +63,7 @@ for input_file in input_files:
 
     for row in rows:
         if match := date_range_regex.search(row):
-            # Year for start month may not be specified if it's the same 
+            # Year for start month may not be specified if it's the same
             # as the end month
             date_range[match.group(1)] = match.group(2) or match.group(4)
             date_range[match.group(3)] = match.group(4)
@@ -100,7 +111,7 @@ for input_file in input_files:
             first_year = min([int(year) for year in date_range.values()])
             transaction_date = datetime.strptime(f'{date_1_month}-{date_1_day}-{first_year}', '%b-%d-%Y')
         posting_date = datetime.strptime(f'{date_2_month}-{date_2_day}-{date_range[date_2_month]}', '%b-%d-%Y')
-        
+
         description, amount = row[10:].split('$')
 
         if description.endswith('-'):
@@ -125,30 +136,65 @@ for input_file in input_files:
             'amount_foreign': match_foreign_currency.group(2) if match_foreign_currency else None,
         })
 
-txns = sorted(txns, key = lambda txn: txn['transaction_date'])
+    return txns
 
-# Write as csv
-with open(output_file, 'w', newline='') as csvfile:
-    csv_writer = csv.writer(csvfile)
-    csv_writer.writerow([
-        'Transaction Date',
-        'Posting Date',
-        'Description',
-        'Amount',
-        'Amount Foreign Currency',
-        'Foreign Currency',
-        'Exchange Rate',
-        'Raw',
-    ])
 
-    for txn in txns:
+def write_txns_to_csv(txns, output_file):
+    with open(output_file, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
         csv_writer.writerow([
-            txn['transaction_date'].strftime('%Y-%m-%d'),
-            txn['posting_date'].strftime('%Y-%m-%d'),
-            txn['description'],
-            txn['amount'],
-            txn['amount_foreign'],
-            txn['foreign_currency'],
-            txn['exchange_rate'],
-            txn['raw'],
+            'Transaction Date',
+            'Posting Date',
+            'Description',
+            'Amount',
+            'Amount Foreign Currency',
+            'Foreign Currency',
+            'Exchange Rate',
+            'Raw',
         ])
+
+        for txn in txns:
+            csv_writer.writerow([
+                txn['transaction_date'].strftime('%Y-%m-%d'),
+                txn['posting_date'].strftime('%Y-%m-%d'),
+                txn['description'],
+                txn['amount'],
+                txn['amount_foreign'],
+                txn['foreign_currency'],
+                txn['exchange_rate'],
+                txn['raw'],
+            ])
+
+
+def main(args):
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        dest="output_file",
+        default=default_output_file,
+        help=f"the output CSV file (default: {default_output_file})",
+    )
+    parser.add_argument(
+        "input_files",
+        nargs="*",
+        default=glob("*.pdf"),
+        help="input PDF statements (default: *.pdf)",
+    )
+
+    args = parser.parse_args()
+
+    if not args.input_files:
+        parser.error("no PDF files found in the current directory")
+
+    txns = []
+    for input_file in args.input_files:
+        txns += read_txns_from_pdf(input_file)
+    txns = sorted(txns, key=lambda txn: txn["transaction_date"])
+
+    write_txns_to_csv(txns, args.output_file)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

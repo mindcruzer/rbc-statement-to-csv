@@ -14,13 +14,13 @@ This program will read transaction data out of RBC credit card statements and pu
 - Python 3.8+
 - [PdfMiner](https://github.com/pdfminer/pdfminer.six)
 
-Ensure `python` is in your PATH.
-
 ## Use
 Drop all PDF statements into the project directory. The program will read all transactions, sort them, and consolidate them into a single .csv file.
 
 ### Windows
-Run (double-click) `convert.bat`.
+Ensure `.py` files are associated with Python.
 
-### Linux
-Run `convert.sh` in terminal.
+Run (double-click) `convert.py`.
+
+### Linux/macOS
+Run `./convert.py` in a terminal.
