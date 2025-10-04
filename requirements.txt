@@ -1,1 +1,2 @@
 pdfminer.six==20221105
+python-dateutil==2.9.0
