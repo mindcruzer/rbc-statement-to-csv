@@ -1,6 +1,6 @@
 # RBC Statement To CSV
 
-This program reads transaction data out of RBC statements and writes them to CSVs.
+This tool converts Royal Bank of Canada (RBC) statements - Credit Card (Visa), Chequing, and Savings - into CSV files.
 
 Supported statements (CSV created only if at least one matching statement is processed):
 - Credit Card (Visa) → `credit_transactions.csv` with the following columns:
@@ -24,12 +24,10 @@ Supported statements (CSV created only if at least one matching statement is pro
 
 - Savings (identical layout to Chequing) → `savings_transactions.csv` with the same columns as chequing.
 
-## Requirements
-- Python 3.8+
-- [PdfMiner](https://github.com/pdfminer/pdfminer.six)
-- [python-dateutil](https://dateutil.readthedocs.io/en/stable/)
-
 ## Installation
+
+### Prerequisites
+- Python 3.8 or higher
 
 ### macOS
 
