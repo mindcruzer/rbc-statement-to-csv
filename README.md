@@ -29,7 +29,43 @@ Supported statements (CSV created only if at least one matching statement is pro
 - [PdfMiner](https://github.com/pdfminer/pdfminer.six)
 - [python-dateutil](https://dateutil.readthedocs.io/en/stable/)
 
-## Use
+## Installation
+
+### macOS
+
+1. Create a virtual environment:
+```bash
+python3 -m venv .venv
+```
+
+2. Activate the virtual environment:
+```bash
+source .venv/bin/activate
+```
+
+3. Install required packages:
+```bash
+pip install -r requirements.txt
+```
+
+### Windows
+
+1. Create a new Python virtual environment using PowerShell:
+```powershell
+python -m venv .venv
+```
+
+2. Activate the virtual environment:
+```powershell
+.venv\Scripts\activate
+```
+
+3. Install required packages:
+```powershell
+pip install -r requirements.txt
+```
+
+## Usage
 Drop all PDF statements into the project directory. The program will auto-discover PDFs in the current folder (or you can pass specific files on the command line), read all transactions, sort them, and write only the CSV file(s) that correspond to the statement types actually processed. Savings statements (e.g., `Savings Statement-4484 2025-01-15.pdf`) are processed the same as chequing but written to `savings_transactions.csv`.
 
 Notes:
@@ -37,10 +73,26 @@ Notes:
 - CSV files are only created when at least one matching statement is successfully processed (no empty header-only files).
 - If a CSV file is open in another program (e.g., Excel), the script will prompt you to close the file and press Enter, then retry writing.
 
+### macOS
+
+Run the script from a terminal:
+```bash
+python3 convert.py
+```
+
 ### Windows
-Ensure `.py` files are associated with Python.
 
-Run (double-click) `convert.py`.
+To run the script, you can either:
 
-### Linux/macOS
-Run `./convert.py` in a terminal.
+Double-click `convert.py`.
+
+> [!IMPORTANT]
+> Ensure `.py` files are associated with Python.
+
+or
+
+Run from PowerShell:
+
+```powershell
+python convert.py
+```
